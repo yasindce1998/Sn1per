@@ -1,6 +1,6 @@
 #!/bin/bash
 # + -- --=[Sn1per Community Edition by @xer0dayz
-# + -- --=[https://xerosecurity.com
+# + -- --=[https://sn1persecurity.com
 # 
 
 if [[ $EUID -ne 0 ]]; then
@@ -8,7 +8,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-VER="9.0"
+VER="9.2"
 INSTALL_DIR="/usr/share/sniper"
 LOOT_DIR="$INSTALL_DIR/loot/$TARGET"
 SNIPER_PRO=$INSTALL_DIR/pro.sh
@@ -46,101 +46,105 @@ DISTRO=$(cat /etc/*-release | grep DISTRIB_ID= | cut -d'=' -f2)
 
 function help {
   logo
-  echo ""
-  echo -e "$OKBLUE[*]$RESET NORMAL MODE"
-  echo ' sniper -t <TARGET>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET SPECIFY CUSTOM CONFIG FILE"
-  echo ' sniper -c /full/path/to/sniper.conf -t <TARGET> -m <MODE> -w <WORKSPACE>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET NORMAL MODE + OSINT + RECON"
-  echo ' sniper -t <TARGET> -o -re'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET STEALTH MODE + OSINT + RECON"
-  echo ' sniper -t <TARGET> -m stealth -o -re'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET DISCOVER MODE"
-  echo ' sniper -t <CIDR> -m discover -w <WORSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET SCAN ONLY SPECIFIC PORT"
-  echo ' sniper -t <TARGET> -m port -p <portnum>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET FULLPORTONLY SCAN MODE"
-  echo ' sniper -t <TARGET> -fp'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET WEB MODE - PORT 80 + 443 ONLY!"
-  echo ' sniper -t <TARGET> -m web'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET HTTP WEB PORT MODE"
-  echo ' sniper -t <TARGET> -m webporthttp -p <port>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET HTTPS WEB PORT MODE"
-  echo ' sniper -t <TARGET> -m webporthttps -p <port>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET HTTP WEBSCAN MODE"
-  echo ' sniper -t <TARGET> -m webscan '
-  echo ""
-  echo -e "$OKBLUE[*]$RESET ENABLE BRUTEFORCE"
-  echo ' sniper -t <TARGET> -b'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET AIRSTRIKE MODE"
-  echo ' sniper -f targets.txt -m airstrike'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET NUKE MODE WITH TARGET LIST, BRUTEFORCE ENABLED, FULLPORTSCAN ENABLED, OSINT ENABLED, RECON ENABLED, WORKSPACE & LOOT ENABLED"
-  echo ' sniper -f targets.txt -m nuke -w <WORKSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET MASS PORT SCAN MODE"
-  echo ' sniper -f targets.txt -m massportscan -w <WORKSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET MASS WEB SCAN MODE"
-  echo ' sniper -f targets.txt -m massweb -w <WORKSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET MASS WEBSCAN SCAN MODE"
-  echo ' sniper -f targets.txt -m masswebscan -w <WORKSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET MASS VULN SCAN MODE"
-  echo ' sniper -f targets.txt -m massvulnscan -w <WORKSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET PORT SCAN MODE"
-  echo ' sniper -t <TARGET> -m port -p <PORT_NUM>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET LIST WORKSPACES"
-  echo ' sniper --list'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET DELETE WORKSPACE"
-  echo ' sniper -w <WORKSPACE_ALIAS> -d'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET DELETE HOST FROM WORKSPACE"
-  echo ' sniper -w <WORKSPACE_ALIAS> -t <TARGET> -dh'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET DELETE TASKS FROM WORKSPACE"
-  echo ' sniper -w <WORKSPACE_ALIAS> -t <TARGET> -dt'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET GET SNIPER SCAN STATUS"
-  echo ' sniper --status'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET LOOT REIMPORT FUNCTION"
-  echo ' sniper -w <WORKSPACE_ALIAS> --reimport'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET LOOT REIMPORTALL FUNCTION"
-  echo ' sniper -w <WORKSPACE_ALIAS> --reimportall'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET LOOT REIMPORT FUNCTION"
-  echo ' sniper -w <WORKSPACE_ALIAS> --reload'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET LOOT EXPORT FUNCTION"
-  echo ' sniper -w <WORKSPACE_ALIAS> --export'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET SCHEDULED SCANS"
-  echo ' sniper -w <WORKSPACE_ALIAS> -s daily|weekly|monthly'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET USE A CUSTOM CONFIG"
-  echo ' sniper -c /path/to/sniper.conf -t <TARGET> -w <WORKSPACE_ALIAS>'
-  echo ""
-  echo -e "$OKBLUE[*]$RESET UPDATE SNIPER"
-  echo ' sniper -u|--update'
-  echo ""
-  echo ""
+  local star
+  printf -v star "$OKBLUE[*]$RESET"
+  cat <<EOHELP
+
+$star NORMAL MODE
+ sniper -t <TARGET>
+
+$star SPECIFY CUSTOM CONFIG FILE
+ sniper -c /full/path/to/sniper.conf -t <TARGET> -m <MODE> -w <WORKSPACE>
+
+$star NORMAL MODE + OSINT + RECON
+ sniper -t <TARGET> -o -re
+
+$star STEALTH MODE + OSINT + RECON
+ sniper -t <TARGET> -m stealth -o -re
+
+$star DISCOVER MODE
+ sniper -t <CIDR> -m discover -w <WORSPACE_ALIAS>
+
+$star SCAN ONLY SPECIFIC PORT
+ sniper -t <TARGET> -m port -p <portnum>
+
+$star FULLPORTONLY SCAN MODE
+ sniper -t <TARGET> -fp
+
+$star WEB MODE - PORT 80 + 443 ONLY!
+ sniper -t <TARGET> -m web
+
+$star HTTP WEB PORT MODE
+ sniper -t <TARGET> -m webporthttp -p <port>
+
+$star HTTPS WEB PORT MODE
+ sniper -t <TARGET> -m webporthttps -p <port>
+
+$star HTTP WEBSCAN MODE
+ sniper -t <TARGET> -m webscan
+
+$star ENABLE BRUTEFORCE
+ sniper -t <TARGET> -b
+
+$star AIRSTRIKE MODE
+ sniper -f targets.txt -m airstrike
+
+$star NUKE MODE WITH TARGET LIST, BRUTEFORCE ENABLED, FULLPORTSCAN ENABLED, OSINT ENABLED, RECON ENABLED, WORKSPACE & LOOT ENABLED
+ sniper -f targets.txt -m nuke -w <WORKSPACE_ALIAS>
+
+$star MASS PORT SCAN MODE
+ sniper -f targets.txt -m massportscan -w <WORKSPACE_ALIAS>
+
+$star MASS WEB SCAN MODE
+ sniper -f targets.txt -m massweb -w <WORKSPACE_ALIAS>
+
+$star MASS WEBSCAN SCAN MODE
+ sniper -f targets.txt -m masswebscan -w <WORKSPACE_ALIAS>
+
+$star MASS VULN SCAN MODE
+ sniper -f targets.txt -m massvulnscan -w <WORKSPACE_ALIAS>
+
+$star PORT SCAN MODE
+ sniper -t <TARGET> -m port -p <PORT_NUM>
+
+$star LIST WORKSPACES
+ sniper --list
+
+$star DELETE WORKSPACE
+ sniper -w <WORKSPACE_ALIAS> -d
+
+$star DELETE HOST FROM WORKSPACE
+ sniper -w <WORKSPACE_ALIAS> -t <TARGET> -dh
+
+$star DELETE TASKS FROM WORKSPACE
+ sniper -w <WORKSPACE_ALIAS> -t <TARGET> -dt
+
+$star GET SNIPER SCAN STATUS
+ sniper --status
+
+$star LOOT REIMPORT FUNCTION
+ sniper -w <WORKSPACE_ALIAS> --reimport
+
+$star LOOT REIMPORTALL FUNCTION
+ sniper -w <WORKSPACE_ALIAS> --reimportall
+
+$star LOOT REIMPORT FUNCTION
+ sniper -w <WORKSPACE_ALIAS> --reload
+
+$star LOOT EXPORT FUNCTION
+ sniper -w <WORKSPACE_ALIAS> --export
+
+$star SCHEDULED SCANS
+ sniper -w <WORKSPACE_ALIAS> -s daily|weekly|monthly
+
+$star USE A CUSTOM CONFIG
+ sniper -c /path/to/sniper.conf -t <TARGET> -w <WORKSPACE_ALIAS>
+
+$star UPDATE SNIPER
+ sniper -u|--update
+
+
+EOHELP
   exit
 }
 
@@ -152,7 +156,7 @@ function logo {
   echo -e "$OKRED /____/_/ /_/___/ .___/\___/_/     $RESET"
   echo -e "$OKRED               /_/                 $RESET"
   echo ""
-  echo -e "$OKORANGE + -- --=[ https://xerosecurity.com$RESET"
+  echo -e "$OKORANGE + -- --=[ https://sn1persecurity.com$RESET"
   echo -e "$OKORANGE + -- --=[ Sn1per v$VER by @xer0dayz$RESET"
   echo ""
 }
@@ -164,15 +168,6 @@ function sniper_status {
 # CHECK FOR UPDATES
 function check_update {
   if [[ "$ENABLE_AUTO_UPDATES" == "1" ]] && [[ "$ONLINE" == "1" ]]; then
-    if [[ -f "$INSTALL_DIR/pro/settings.php" ]]; then
-      LICENSE_KEY=$(grep "LICENSE_KEY" $INSTALL_DIR/pro/settings.php | cut -d\" -f2 2> /dev/null)
-      VERSION=$(grep 9.0 $INSTALL_DIR/pro.sh | wc -c)
-      if [[ $VERSION = "71" ]]; then
-        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/9.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
-      else
-        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/8.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
-      fi
-    fi
     LATEST_VER=$(curl --connect-timeout 5 -s https://api.github.com/repos/1N3/Sn1per/tags | grep -Po '"name":.*?[^\\]",'| head -1 | cut -c11-13)
     if [[ "$LATEST_VER" != "$VER" ]]; then
       echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE] sniper v$LATEST_VER is available to download... To update, type$OKRED \"sniper -u\" $RESET"
@@ -188,15 +183,6 @@ function update {
   if [[ "$ONLINE" == "0" ]]; then
     echo "You will need to download the latest release manually at https://github.com/1N3/Sn1per/"
   else
-    if [[ -f "$INSTALL_DIR/pro/settings.php" ]]; then
-      LICENSE_KEY=$(grep "LICENSE_KEY" $INSTALL_DIR/pro/settings.php | cut -d\" -f2 )
-      VERSION=$(grep 9.0 $INSTALL_DIR/pro.sh | wc -c)
-      if [[ $VERSION = "71" ]]; then
-        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/9.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
-      else
-        PRO_UPDATE=$(curl --insecure --connect-timeout 5 -s --user-agent "`hostname` - `uname -a`" "https://xerosecurity.com/pro/8.0/$LICENSE_KEY/updates.txt?ver=$VER&mid=$(cat /etc/machine-id)" 2> /dev/null | bash - 2> /dev/null > /dev/null)
-      fi
-    fi
     LATEST_VER=$(curl --connect-timeout 5 -s https://api.github.com/repos/1N3/Sn1per/tags | grep -Po '"name":.*?[^\\]",'| head -1 | cut -c11-13)
     if [[ "$LATEST_VER" != "$VER" ]]; then
       echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE] Sn1per $LATEST_VER is available to download...Do you want to update? (y or n)$RESET"
@@ -221,7 +207,7 @@ fi
 
 # CHECK IF ONLINE
 function check_online {
-  ONLINE=$(curl --connect-timeout 3 --insecure -s "https://xerosecurity.com/community/updates.txt?$VER&mid=$(cat /etc/machine-id)" 2> /dev/null)
+  ONLINE=$(curl --connect-timeout 3 --insecure -s "https://sn1persecurity.com/community/updates.txt?$VER&mid=$(cat /etc/machine-id)" 2> /dev/null)
   if [[ -z "$ONLINE" ]]; then
     ONLINE=$(curl --connect-timeout 3 -s https://api.github.com/repos/1N3/Sn1per/tags | grep -Po '"name":.*?[^\\]",'| head -1 | cut -c11-13)
     if [[ -z "$ONLINE" ]]; then
@@ -478,7 +464,7 @@ function init {
   service postgresql start 2> /dev/null > /dev/null
   msfdb start 2> /dev/null > /dev/null
   chown root /run/user/1000/gdm/Xauthority 2> /dev/null
-  LAST_USER=$(last | head -n 1 | awk '{print $1}')
+  LAST_USER=$(last 2> /dev/null | head -n 1 | awk '{print $1}')
   sudo cp -a /home/$LAST_USER/.Xauthority /root/.Xauthority 2> /dev/null
   sudo cp -a /root/.Xauthority /root/.Xauthority.bak 2> /dev/null
   sudo cp -a /home/$USER/.Xauthority /root/.Xauthority 2> /dev/null
@@ -604,8 +590,24 @@ function loot {
         source $INSTALL_DIR/pro.sh
       fi
     else
-      echo -e "$OKRED + -- --=[ Sn1per Professional is not installed. To download Sn1per Professional, go to https://xerosecurity.com. $RESET"
-      sudo $LAST_USER -c $BROWSER https://xerosecurity.com 2> /dev/null > /dev/null &
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET ⚡ Upgrade to Sn1per Professional and unlock a world of powerful benefits! 🚀 $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET 💡 Don't miss out on important updates by using the Community version. $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET 🔝 The latest Professional version ( ${OKRED}11.0 ${RESET}) offers unparalleled features, including: $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET     💻 Sleek Web UI $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET     🛠️ Extensive add-ons $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET     🔄 Seamless integrations $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET 🤝 Experience priority support, continuous updates, and enhanced capabilities tailored for professionals like you. $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET 💰 Maximize your investment and achieve exceptional results with Sn1per Professional. $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET 🔍 Learn more about the differences between the versions at: ${OKBLUE}https://sn1persecurity.com/wordpress/sn1per-community-vs-professional-whats-the-difference/ $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET  $RESET"
+      echo -e "$OKBLUE[$RESET${OKRED}i${RESET}$OKBLUE]$RESET 🛒 Purchase your Sn1per Professional license now at: ${OKBLUE}https://sn1persecurity.com/ $RESET"
+      sudo $LAST_USER -c $BROWSER https://sn1persecurity.com 2> /dev/null > /dev/null &
     fi
     rm -f $UPDATED_TARGETS 2> /dev/null
     touch $UPDATED_TARGETS 2> /dev/null

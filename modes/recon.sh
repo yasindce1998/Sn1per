@@ -1,7 +1,7 @@
 if [[ "$RECON" = "1" ]]; then
-  echo "[xerosecurity.com] •?((¯°·._.• Started Sn1per recon scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+  echo "[sn1persecurity.com] •?((¯°·._.• Started Sn1per recon scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
   if [[ "$SLACK_NOTIFICATIONS" == "1" ]]; then
-    /bin/bash "$INSTALL_DIR/bin/slack.sh" "[xerosecurity.com] •?((¯°·._.• Started Sn1per recon scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
+    /bin/bash "$INSTALL_DIR/bin/slack.sh" "[sn1persecurity.com] •?((¯°·._.• Started Sn1per recon scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
   fi
 
   touch $LOOT_DIR/domains/domains_old-$TARGET.txt 2> /dev/null
@@ -11,7 +11,7 @@ if [[ "$RECON" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     echo -e "$OKRED GATHERING DNS SUBDOMAINS VIA SUBLIST3R $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    python /usr/share/sniper/plugins/Sublist3r/sublist3r.py -d $TARGET -vvv -o $LOOT_DIR/domains/domains-$TARGET.txt 2>/dev/null > /dev/null
+    python3 /usr/share/sniper/plugins/Sublist3r/sublist3r.py -d $TARGET -vvv -o $LOOT_DIR/domains/domains-$TARGET.txt 2>/dev/null > /dev/null
     sed -ie 's/<BR>/\n/g' domains-$TARGET-full.txt 2> /dev/null
     mv -f $LOOT_DIR/domains/domains-$TARGET.txte $LOOT_DIR/domains/domains-$TARGET.txt 2> /dev/null
     wc -l $LOOT_DIR/domains/domains-$TARGET.txt 2> /dev/null
@@ -33,9 +33,10 @@ if [[ "$RECON" = "1" ]]; then
   fi
   if [[ "$SUBFINDER" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    echo -e "$OKRED GATHERING DNS SUBDOMAINS VIA SUBFINDER (THIS COULD TAKE A WHILE...) $RESET"
+    echo -e "$OKRED GATHERING DNS SUBDOMAINS VIA SUBFINDER $RESET"
+    echo -e "$OKBLUE[*]$RESET Running: subfinder -o $LOOT_DIR/domains/domains-$TARGET-subfinder.txt -d $TARGET -t 100 $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    subfinder -o $LOOT_DIR/domains/domains-$TARGET-subfinder.txt -b -d $TARGET -w $DOMAINS_DEFAULT -t 100 2>/dev/null
+    subfinder -o $LOOT_DIR/domains/domains-$TARGET-subfinder.txt -d $TARGET -nW -rL /sniper/wordlists/resolvers.txt -t $THREADS 2>/dev/null > /dev/null
     wc -l $LOOT_DIR/domains/domains-$TARGET-subfinder.txt 2> /dev/null
   fi  
   if [[ "$DNSCAN" = "1" ]]; then
@@ -76,7 +77,7 @@ if [[ "$RECON" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     echo -e "$OKRED GATHERING CENSYS SUBDOMAINS $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    python $PLUGINS_DIR/censys-subdomain-finder/censys_subdomain_finder.py --censys-api-id $CENSYS_APP_ID --censys-api-secret $CENSYS_API_SECRET $TARGET | egrep "\-" | awk '{print $2}' | egrep -v "Searching|Found" > $LOOT_DIR/domains/domains-$TARGET-censys.txt 2> /dev/null 
+    python3 $PLUGINS_DIR/censys-subdomain-finder/censys_subdomain_finder.py --censys-api-id $CENSYS_APP_ID --censys-api-secret $CENSYS_API_SECRET $TARGET | egrep "\-" | awk '{print $2}' | egrep -v "Searching|Found" > $LOOT_DIR/domains/domains-$TARGET-censys.txt 2> /dev/null 
     wc -l $LOOT_DIR/domains/domains-$TARGET-censys.txt 2> /dev/null
   fi
   if [[ "$SHODAN" = "1" ]]; then
@@ -128,7 +129,7 @@ if [[ "$RECON" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     echo -e "$OKRED GATHERING SUBBRUTE SUBDOMAINS $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    python "$INSTALL_DIR/plugins/massdns/scripts/subbrute.py" $INSTALL_DIR/wordlists/domains-all.txt $TARGET 2> /dev/null > $LOOT_DIR/domains/domains-$TARGET-subbrute.txt 2> /dev/null
+    python3 "$INSTALL_DIR/plugins/massdns/scripts/subbrute.py" $INSTALL_DIR/wordlists/domains-all.txt $TARGET 2> /dev/null > $LOOT_DIR/domains/domains-$TARGET-subbrute.txt 2> /dev/null
     wc -l $LOOT_DIR/domains/domains-$TARGET-subbrute.txt 2> /dev/null
   fi
   if [[ "$ALT_DNS" = "1" ]]; then
@@ -177,10 +178,10 @@ if [[ "$RECON" = "1" ]]; then
   cat $LOOT_DIR/domains/domains_new-$TARGET.txt 2> /dev/null
 
   if [[ $(wc -c $LOOT_DIR/domains/domains_new-$TARGET.txt 2> /dev/null | awk '{print $1}') > 3 ]]; then
-    echo "[xerosecurity.com] •?((¯°·._.• New domains detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+    echo "[sn1persecurity.com] •?((¯°·._.• New domains detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
     cat $LOOT_DIR/domains/domains_new-$TARGET.txt 2> /dev/null >> $LOOT_DIR/scans/notifications_new.txt 2> /dev/null 
     if [[ "$SLACK_NOTIFICATIONS_DOMAINS_NEW" == "1" ]]; then
-      /bin/bash "$INSTALL_DIR/bin/slack.sh" "[xerosecurity.com] •?((¯°·._.• New domains detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
+      /bin/bash "$INSTALL_DIR/bin/slack.sh" "[sn1persecurity.com] •?((¯°·._.• New domains detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
       /bin/bash "$INSTALL_DIR/bin/slack.sh" postfile "$LOOT_DIR/domains/domains_new-$TARGET.txt"
     fi
   fi
@@ -190,16 +191,6 @@ if [[ "$RECON" = "1" ]]; then
     echo -e "$OKRED DISPLAYING INTERESTING DOMAINS SEARCH $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     egrep -iE "GREP_INTERESTING_SUBDOMAINS" $LOOT_DIR/domains/domains-$TARGET-full.txt 2> /dev/null | tee $LOOT_DIR/domains/domains_interesting-$TARGET.txt | head -n "$GREP_MAX_LINES"
-  fi
-  if [[ "$SPOOF_CHECK" = "1" ]]; then
-    echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    echo -e "$OKRED CHECKING FOR EMAIL SECURITY $RESET"
-    echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    python $PLUGINS_DIR/spoofcheck/spoofcheck.py $TARGET | tee $LOOT_DIR/nmap/email-$TARGET.txt 2>/dev/null
-    echo ""
-    if [[ "$SLACK_NOTIFICATIONS_EMAIL_SECURITY" == "1" ]]; then
-      /bin/bash "$INSTALL_DIR/bin/slack.sh" postfile "$LOOT_DIR/nmap/email-$TARGET.txt"
-    fi
   fi
   if [[ "$SUBHIJACK_CHECK" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
@@ -240,16 +231,6 @@ if [[ "$RECON" = "1" ]]; then
       /bin/bash "$INSTALL_DIR/bin/slack.sh" postfile "$LOOT_DIR/nmap/subjack_new-$TARGET.txt"
     fi
   fi
-  if [[ "$SLURP" = "1" ]]; then
-    echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    echo -e "$OKRED STARTING PUBLIC S3 BUCKET SCAN $RESET"
-    echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-    cd $PLUGINS_DIR/slurp/
-    ./slurp-linux-amd64 domain --domain $TARGET | tee $LOOT_DIR/nmap/takeovers-$TARGET-s3-buckets.txt 2>/dev/null
-    if [[ "$SLACK_NOTIFICATIONS_S3_BUCKETS" == "1" ]]; then
-      /bin/bash "$INSTALL_DIR/bin/slack.sh" postfile "$LOOT_DIR/nmap/takeovers-$TARGET-s3-buckets.txt"
-    fi
-  fi
   if [[ "$ASN_CHECK" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     echo -e "$OKRED RETRIEVING ASN INFO $RESET"
@@ -275,8 +256,8 @@ if [[ "$RECON" = "1" ]]; then
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     sniper -f $LOOT_DIR/domains/domains-$TARGET-full.txt -m flyover -w $WORKSPACE
   fi
-  echo "[xerosecurity.com] •?((¯°·._.• Finished Sn1per scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+  echo "[sn1persecurity.com] •?((¯°·._.• Finished Sn1per scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
   if [[ "$SLACK_NOTIFICATIONS" == "1" ]]; then
-    /bin/bash "$INSTALL_DIR/bin/slack.sh" "[xerosecurity.com] •?((¯°·._.• Finished Sn1per scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
+    /bin/bash "$INSTALL_DIR/bin/slack.sh" "[sn1persecurity.com] •?((¯°·._.• Finished Sn1per scan: $TARGET [recon] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
   fi
 fi

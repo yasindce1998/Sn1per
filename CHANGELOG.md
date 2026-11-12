@@ -1,4 +1,30 @@
 ## CHANGELOG:
+* v9.2 - Added Tomba.io API integration via OSINT mode (Credit: @benemohamed)
+* v9.2 - Fixed issue with gau tool not installing and updated GAU setting in confs
+* v9.2 - Updated python2 to python3
+* v9.2 - Removed Slurp tool
+* v9.2 - Added BlackArch Dockerfile (Credit: @AnonymousWP)
+* v9.2 - Updated DockerFile to latest Kali release (Credit: @AnonymousWP)
+* v9.1 - Fixed issue with dirsearch installation/command syntax update
+* v9.1 - Updated Nuclei sc0pe templates
+* v9.1 - Fixed issue with Nuclei sc0pe parsers not working
+* v9.1 - Fixed issue with GAU installer/commmand not working
+* v9.1 - Fixed issue with passive URL fetching 
+* v9.1 - Fixed issue with nuclei not being installed
+* v9.1 - Removed error in hackertarget URL fetching
+* v9.1 - Added dnsutils to installer to fix missing deps
+* v9.1 - Fixed issue with gau in webscan modes not running
+* v9.1 - Updated subfinder to latest version
+* v9.1 - Added new email spoofing security checks to OSINT mode (-o)
+* v9.1 - Removed spoofcheck.py
+* v9.1 - Updated timeout settings for curl which was causing sockets/scans to hang
+* v9.1 - Fixed issue with Nuclei symlink missing in installer
+* v9.1 - Fixed issue with Nuclei sc0pe parser not parsing results correctly
+* v9.1 - Fixed issue with Dirsearch not running due to invalid command settings
+* v9.1 - Fixed issue with Nuclei templates not being installed
+* v9.1 - Fixed issue with enum4linux command not being installed
+* v9.1 - Fixed HackerTarget API integration
+* v9.1 - Fixed issue with ping command not being installed
 * v9.1 - Fixed issue with carriage returns in conf
 * v9.1 - Fixed issue with DNS resolution in 'discover' mode scans causing duplicate hosts
 * v9.1 - Fixed issue with bruteforce running automatically due to changes in conf file
@@ -367,7 +393,7 @@
 * v5.1 - Added dnscan to install.sh and updated sniper references which were broken
 * v5.1 - Changed default brute force list for dnscan to improve performance of scans
 * v5.1 - Removed CloudHunter and SubOver references (CC. 爱上平顶山)
-* v5.0 - Added Sn1per Pro reporting interface (see https://xerosecurity.com for more details)
+* v5.0 - Added Sn1per Pro reporting interface (see https://sn1persecurity.com for more details)
 * v5.0 - Added GPON Router RCE auto exploit 
 * v5.0 - Added Cloudapp.net Azure subdomain takeover check
 * v5.0 - Added Cisco ASA Directory Traversal auto exploit (CVE-2018-0296)

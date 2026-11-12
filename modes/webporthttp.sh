@@ -19,9 +19,9 @@ if [[ "$MODE" = "webporthttp" ]]; then
     echo "sniper -t $TARGET -m $MODE --noreport $args" >> $LOOT_DIR/scans/running_${TARGET}_${MODE}.txt
     ls -lh $LOOT_DIR/scans/running_*.txt 2> /dev/null | wc -l 2> /dev/null > $LOOT_DIR/scans/tasks-running.txt
 
-    echo "[xerosecurity.com] •?((¯°·._.• Started Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+    echo "[sn1persecurity.com] •?((¯°·._.• Started Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
     if [[ "$SLACK_NOTIFICATIONS" == "1" ]]; then
-      /bin/bash "$INSTALL_DIR/bin/slack.sh" "[xerosecurity.com] •?((¯°·._.• Started Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
+      /bin/bash "$INSTALL_DIR/bin/slack.sh" "[sn1persecurity.com] •?((¯°·._.• Started Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
     fi
     sniper -t $TARGET -m $MODE -p $PORT --noreport $args | tee $LOOT_DIR/output/sniper-$TARGET-$MODE-$PORT-`date +"%Y%m%d%H%M"`.txt 2>&1
     exit
@@ -33,7 +33,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
   echo -e "$OKRED /____/_/ /_/___/ .___/\___/_/     $RESET"
   echo -e "$OKRED               /_/                 $RESET"
   echo -e "$RESET"
-  echo -e "$OKORANGE + -- --=[https://xerosecurity.com"
+  echo -e "$OKORANGE + -- --=[https://sn1persecurity.com"
   echo -e "$OKORANGE + -- --=[Sn1per v$VER by @xer0dayz"
   echo -e ""
   echo -e ""
@@ -84,8 +84,8 @@ if [[ "$MODE" = "webporthttp" ]]; then
     echo -e "$OKRED CHECKING HTTP HEADERS AND METHODS $RESET"
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     wget -qO- -T 1 --connect-timeout=5 --read-timeout=10 --tries=1 http://$TARGET:$PORT |  perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' >> $LOOT_DIR/web/title-http-$TARGET-$PORT.txt 2> /dev/null
-    curl --connect-timeout 5 -I -s -R --insecure http://$TARGET:$PORT | tee $LOOT_DIR/web/headers-http-$TARGET-$PORT.txt 2> /dev/null
-    curl --connect-timeout 5 -I -s -R -L --insecure http://$TARGET:$PORT | tee $LOOT_DIR/web/websource-http-$TARGET-$PORT.txt 2> /dev/null
+    curl --connect-timeout 5 --max-time 10 -I -s -R --insecure http://$TARGET:$PORT | tee $LOOT_DIR/web/headers-http-$TARGET-$PORT.txt 2> /dev/null
+    curl --connect-timeout 5 --max-time 10 -I -s -R -L --insecure http://$TARGET:$PORT | tee $LOOT_DIR/web/websource-http-$TARGET-$PORT.txt 2> /dev/null
     curl --connect-timeout 5 --max-time 10 -I -s -R --insecure -X OPTIONS http://$TARGET:$PORT | grep Allow\: | tee $LOOT_DIR/web/http_options-$TARGET-port$PORT.txt 2> /dev/null
     echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
     echo -e "$OKRED DISPLAYING META GENERATOR TAGS $RESET"
@@ -165,7 +165,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING PASSIVE WEB SPIDER $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2019-51-index?url=*.$TARGET&output=json" | jq -r .url | egrep -v "null" | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null | head -n 250
+      curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2022-33-index?url=*.$TARGET&output=json" -H 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Safari/537.36' 2> /dev/null | jq -r .url | egrep -v "null" | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null | head -n 250
     fi
     if [[ "$WAYBACKMACHINE" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
@@ -177,13 +177,13 @@ if [[ "$MODE" = "webporthttp" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED FETCHING HACKERTARGET URLS $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      curl -sX GET "http://api.hackertarget.com/pagelinks/?q=http://$TARGET" | egrep -v "API count|no links found|input url is invalid|API count|no links found|input url is invalid" | tee $LOOT_DIR/web/hackertarget-http-$TARGET.txt 2> /dev/null | head -n 250
+      curl -s GET "https://api.hackertarget.com/pagelinks/?q=http://$TARGET" | egrep -v "API count|no links found|input url is invalid|API count|no links found|input url is invalid|error getting links" | tee $LOOT_DIR/web/hackertarget-http-$TARGET.txt 2> /dev/null | head -n 250
     fi
-    if [[ "$GUA" == "1" ]]; then
+    if [[ "$GAU" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED FETCHING GUA URLS $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      gau2 -subs $TARGET | tee $LOOT_DIR/web/gua-$TARGET.txt 2> /dev/null | head -n 250
+      gau -subs $TARGET | tee $LOOT_DIR/web/gua-$TARGET.txt 2> /dev/null | head -n 250
     fi
     if [[ "$BLACKWIDOW" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
@@ -204,7 +204,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
       mv $LOOT_DIR/web/spider-$TARGET.sorted $LOOT_DIR/web/spider-$TARGET.txt 2>/dev/null
       diff $LOOT_DIR/web/spider-$TARGET.bak $LOOT_DIR/web/spider-$TARGET.txt 2> /dev/null | grep "> " 2> /dev/null | awk '{print $2}' 2> /dev/null > $LOOT_DIR/web/spider-new-$TARGET.txt
       if [[ $(wc -c $LOOT_DIR/web/spider-new-$TARGET.txt | awk '{print $1}') > 3 ]]; then
-        echo "[xerosecurity.com] •?((¯°·._.• Spider URL change detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+        echo "[sn1persecurity.com] •?((¯°·._.• Spider URL change detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
         head -n 20 $LOOT_DIR/web/spider-new-$TARGET.txt 2> /dev/null >> $LOOT_DIR/scans/notifications_new.txt 2> /dev/null
       fi
       if [[ "$SLACK_NOTIFICATIONS_SPIDER_NEW" == "1" && "SLACK_NOTIFICATIONS" == "1" ]]; then
@@ -228,7 +228,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
       echo -e "$OKRED RUNNING COMMON FILE/DIRECTORY BRUTE FORCE $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       if [[ "$DIRSEARCH" == "1" ]]; then
-        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_COMMON -x $WEB_BRUTE_EXCLUDE_CODES -F -e "$WEB_BRUTE_EXTENSIONS" -t $THREADS --exclude-texts=Attack Detected,Please contact the system administrator,Page Not Found,URL No Longer Exists --random-agents --plain-text-report=$LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null > /dev/null && cat $LOOT_DIR/web/dirsearch-$TARGET.txt
+        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_COMMON -x $WEB_BRUTE_EXCLUDE_CODES -F -e "$WEB_BRUTE_EXTENSIONS" -t $THREADS --exclude-texts=Attack Detected,Please contact the system administrator,Page Not Found,URL No Longer Exists --random-agent --output=$LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
       fi
       if [[ "$GOBUSTER" == "1" ]]; then
           gobuster -u http://$TARGET:$PORT -w $WEB_BRUTE_COMMON -e | tee $LOOT_DIR/web/webbrute-$TARGET-http-port$PORT-common.txt
@@ -239,7 +239,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
       echo -e "$OKRED RUNNING FULL FILE/DIRECTORY BRUTE FORCE $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       if [[ "$DIRSEARCH" == "1" ]]; then
-        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_FULL -x $WEB_BRUTE_EXCLUDE_CODES -F -e "/" -t $THREADS --exclude-texts=Attack Detected,Please contact the system administrator,Page Not Found,URL No Longer Exists --random-agents --plain-text-report=$LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null > /dev/null && cat $LOOT_DIR/web/dirsearch-$TARGET.txt
+        python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_FULL -x $WEB_BRUTE_EXCLUDE_CODES -F -e "/" -t $THREADS --exclude-texts=Attack Detected,Please contact the system administrator,Page Not Found,URL No Longer Exists --random-agent --output=$LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
       fi
       if [[ "$GOBUSTER" == "1" ]]; then
           gobuster -u http://$TARGET:$PORT -w $WEB_BRUTE_FULL -e | tee $LOOT_DIR/web/webbrute-$TARGET-http-port$PORT-full.txt
@@ -250,7 +250,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
         echo -e "$OKRED RUNNING FILE/DIRECTORY BRUTE FORCE FOR VULNERABILITIES $RESET"
         echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
         if [[ "$DIRSEARCH" == "1" ]]; then
-          python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_EXPLOITS -x $WEB_BRUTE_EXCLUDE_CODES -F -e "/" -t $THREADS --exclude-texts=Attack Detected,Please contact the system administrator,Page Not Found,URL No Longer Exists --random-agents --plain-text-report=$LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null > /dev/null && cat $LOOT_DIR/web/dirsearch-$TARGET.txt
+          python3 $PLUGINS_DIR/dirsearch/dirsearch.py -u http://$TARGET:$PORT -w $WEB_BRUTE_EXPLOITS -x $WEB_BRUTE_EXCLUDE_CODES -F -e "/" -t $THREADS --exclude-texts=Attack Detected,Please contact the system administrator,Page Not Found,URL No Longer Exists --random-agent --output=$LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null
         fi
         if [[ "$GOBUSTER" == "1" ]]; then
           gobuster -u http://$TARGET:$PORT -w $WEB_BRUTE_EXPLOITS -e | tee $LOOT_DIR/web/webbrute-$TARGET-http-port$PORT-exploits.txt
@@ -263,7 +263,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
       mv $LOOT_DIR/web/dirsearch-$TARGET.sorted $LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null 
       diff $LOOT_DIR/web/dirsearch-$TARGET.bak $LOOT_DIR/web/dirsearch-$TARGET.txt 2> /dev/null | grep "> " 2> /dev/null | awk '{print $2 " " $3 " " $4}' 2> /dev/null > $LOOT_DIR/web/dirsearch-new-$TARGET.txt
       if [[ $(wc -c $LOOT_DIR/web/dirsearch-new-$TARGET.txt| awk '{print $1}') > 3 ]]; then
-        echo "[xerosecurity.com] •?((¯°·._.• Disovered URL change detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+        echo "[sn1persecurity.com] •?((¯°·._.• Disovered URL change detected on $TARGET (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
         cat $LOOT_DIR/web/dirsearch-new-$TARGET.txt 2> /dev/null >> $LOOT_DIR/scans/notifications_new.txt 2> /dev/null
       fi
       if [[ "$SLACK_NOTIFICATIONS_DIRSEARCH_NEW" == "1" ]]; then
@@ -325,14 +325,14 @@ if [[ "$MODE" = "webporthttp" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING SHELLSHOCK EXPLOIT SCAN $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      python $PLUGINS_DIR/shocker/shocker.py -H $TARGET --cgilist $PLUGINS_DIR/shocker/shocker-cgi_list --port ${PORT} | tee $LOOT_DIR/web/shocker-$TARGET-port${PORT}.txt
+      python3 $PLUGINS_DIR/shocker/shocker.py -H $TARGET --cgilist $PLUGINS_DIR/shocker/shocker-cgi_list --port ${PORT} | tee $LOOT_DIR/web/shocker-$TARGET-port${PORT}.txt
     fi
     if [[ "$JEXBOSS" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING JEXBOSS $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       cd /tmp/
-      python /usr/share/sniper/plugins/jexboss/jexboss.py -u http://$TARGET:${PORT} | tee $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw
+      python3 /usr/share/sniper/plugins/jexboss/jexboss.py -u http://$TARGET:${PORT} | tee $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw
       sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw > $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.txt 2> /dev/null
       rm -f $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw 2> /dev/null
       cd $INSTALL_DIR
@@ -347,7 +347,7 @@ if [[ "$MODE" = "webporthttp" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING NUCLEI SCAN $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      nuclei -silent -t /usr/share/sniper/plugins/nuclei-templates/ -c $THREADS -target http://$TARGET:${PORT} -o $LOOT_DIR/web/nuclei-http-${TARGET}-port${PORT}.txt 
+      nuclei -silent -t /root/nuclei-templates/ -c $THREADS -target http://$TARGET:${PORT} -o $LOOT_DIR/web/nuclei-http-${TARGET}-port${PORT}.txt
     fi
     SSL="false"
     source $INSTALL_DIR/modes/web_autopwn.sh
@@ -446,9 +446,9 @@ if [[ "$MODE" = "webporthttp" ]]; then
     echo "$SHELLED" > $LOOT_DIR/output/shelled-$TARGET.txt 2> /dev/null
   fi
   
-  echo "[xerosecurity.com] •?((¯°·._.• Finished Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
+  echo "[sn1persecurity.com] •?((¯°·._.• Finished Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•" >> $LOOT_DIR/scans/notifications_new.txt
   if [[ "$SLACK_NOTIFICATIONS" == "1" ]]; then
-    /bin/bash "$INSTALL_DIR/bin/slack.sh" "[xerosecurity.com] •?((¯°·._.• Finished Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
+    /bin/bash "$INSTALL_DIR/bin/slack.sh" "[sn1persecurity.com] •?((¯°·._.• Finished Sn1per scan: http://$TARGET:$PORT [$MODE] (`date +"%Y-%m-%d %H:%M"`) •._.·°¯))؟•"
   fi
   if [[ "$LOOT" = "1" ]]; then
     loot
